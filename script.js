@@ -43,6 +43,53 @@ window.onload = function() {
     // Center IMS circle functionality
     const centerCircle = document.querySelector('.center-circle');
     
+    // Create connectors for HV and LV side plugins
+    const centerPlugins = centerCircle.querySelectorAll('.plugin');
+    centerPlugins.forEach(plugin => {
+        // Create connector only when the center circle is active (plugins are visible)
+        centerCircle.addEventListener('click', function(e) {
+            // If already has connector, don't create again
+            if (plugin.querySelector('.plugin-connector')) return;
+            
+            setTimeout(() => {
+                if (centerCircle.classList.contains('active')) {
+                    const pluginRect = plugin.getBoundingClientRect();
+                    const centerRect = centerCircle.getBoundingClientRect();
+                    const containerRect = document.querySelector('.container').getBoundingClientRect();
+                    
+                    const pluginX = pluginRect.left + pluginRect.width / 2 - containerRect.left;
+                    const pluginY = pluginRect.top + pluginRect.height / 2 - containerRect.top;
+                    const centerX = centerRect.left + centerRect.width / 2 - containerRect.left;
+                    const centerY = centerRect.top + centerRect.height / 2 - containerRect.top;
+                    
+                    // Calculate angle and distance
+                    const dx = centerX - pluginX;
+                    const dy = centerY - pluginY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    // Create line element
+                    const line = document.createElement('div');
+                    line.className = 'plugin-connector';
+                    line.style.width = `${distance}px`;
+                    line.style.left = `${pluginX}px`;
+                    line.style.top = `${pluginY}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    
+                    document.querySelector('.container').appendChild(line);
+                    
+                    // Store reference to connector in plugin
+                    plugin.connector = line;
+                } else {
+                    // Remove connectors when center circle is deactivated
+                    document.querySelectorAll('.plugin-connector').forEach(conn => {
+                        conn.remove();
+                    });
+                }
+            }, 50); // Small delay to ensure plugin positions are updated
+        });
+    });
+    
     // Toggle plugins visibility when clicking on center circle
     centerCircle.addEventListener('click', function(e) {
         // If clicking on a plugin link, don't toggle
@@ -57,6 +104,13 @@ window.onload = function() {
         
         // Toggle active class on center circle
         this.classList.toggle('active');
+        
+        // If center circle is not active, remove plugin connectors
+        if (!this.classList.contains('active')) {
+            document.querySelectorAll('.plugin-connector').forEach(conn => {
+                conn.remove();
+            });
+        }
     });
     
     // Add hover effects to center circle
@@ -220,6 +274,8 @@ window.onload = function() {
     // Add tooltip functionality to plugins
     document.querySelectorAll('.plugin').forEach(plugin => {
         const parentNodeId = plugin.parentElement.id;
+        if (!parentNodeId) return; // Skip center circle plugins as they're handled separately
+        
         const pluginText = plugin.textContent.trim();
         const info = nodeInfo[parentNodeId].plugins[pluginText];
         
@@ -256,6 +312,11 @@ window.onload = function() {
                 node.element.classList.remove('active');
             });
             centerCircle.classList.remove('active');
+            
+            // Remove plugin connectors
+            document.querySelectorAll('.plugin-connector').forEach(conn => {
+                conn.remove();
+            });
         }
     });
 };
