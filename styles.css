@@ -69,6 +69,16 @@ body {
     background: linear-gradient(to right, rgba(255,255,255,0.2), rgba(204,204,204,1));
 }
 
+/* Plugin connector style - black color */
+.plugin-connector {
+    position: absolute;
+    background-color: #000000;
+    z-index: 1;
+    transform-origin: 0 0;
+    height: 3px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.7);
+}
+
 /* Node colors */
 #qms-node { background-color: #00a3e0; }
 #ehsms-node { background-color: #00a651; }
