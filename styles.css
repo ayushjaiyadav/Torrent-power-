@@ -1,4 +1,9 @@
 body {
+    background-image: url(Torrent-Power-Cover-Image-1080x675.jpeg);
+    background-repeat: no-repeat;
+    background-position:center;
+    background-attachment: fixed;
+    background-size: cover;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
